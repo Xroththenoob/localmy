@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url("blurred.jpg") no-repeat center center/cover fixed;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: white;
+    }
+    header {
+      background: rgb(0, 0, 0);
+      color: white;
+      padding: 15px;
+      font-size: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: rgb(0, 0, 0);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .qr img {
+      width: 250px;
+      margin: 20px 0;
+      border-radius: 20px;
+    }
+    .bank-details {
+      text-align: left;
+      margin: 20px 0;
+    }
+    .bank-details p {
+      margin: 5px 0;
+    }
+    .confirm-btn {
+      display: inline-block;
+      background: green;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .confirm-btn:hover {
+      background: darkgreen;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  Payment
+</header>
+
+<div class="container">
+  <h2>Pay with QR or Bank Transfer</h2>
+
+  <!-- QR Code Payment -->
+  <div class="qr">
+    <h3>Scan to Pay</h3>
+    <img src="qr.jpg" alt="QR Code">
+    <p>Scan using your banking app or eWallet</p>
+  </div>
+
+  <!-- Bank Transfer Details -->
+  <div class="bank-details">
+    <h3>Bank Transfer Details</h3>
+    <p><strong>Bank:</strong> GXBank</p>
+    <p><strong>Account No:</strong> 8888 0071 37391</p>
+    <p><strong>Account Name:</strong> Local MY</p>
+    <p><strong>Amount:</strong> <span id="payment-amount">RM0.00</span></p>
+  </div>
+
+    <!-- Confirm Button -->
+    <a href="#" class="confirm-btn" onclick="confirmPayment()">I Have Paid</a>
+    </div>
+
+    <script>
+    // Function to get URL parameters
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+    
+    // Get total from URL parameter or localStorage
+    function getOrderTotal() {
+      // First try to get from URL parameter
+      let total = getUrlParameter('total');
+      
+      // If not in URL, try localStorage
+      if (!total) {
+        total = localStorage.getItem("orderTotal");
+      }
+      
+      // If still not found, default to 0
+      return total ? parseFloat(total).toFixed(2) : "0.00";
+    }
+    
+    // Update payment amount on page load
+    window.onload = function() {
+      const total = getOrderTotal();
+      document.getElementById("payment-amount").textContent = `RM${total}`;
+      
+      // Store in localStorage as well for redundancy
+      localStorage.setItem("orderTotal", total);
+    };
+    
+    function confirmPayment() {
+        const total = getOrderTotal();
+        alert(`✅ Payment of RM${total} confirmed! Your order has been placed successfully.`);
+        window.location.href = "mainpage.html"; // redirect back to main page
+        
+        // Clear the stored total
+        localStorage.removeItem("orderTotal");
+    }
+    </script>
+
+</body>
+</html>

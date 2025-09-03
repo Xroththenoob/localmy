@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LocalMY</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f6f6;
+      width: 100%;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      background: #000000;
+      color: #fff;
+      font-size: 13px;
+      padding: 6px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .top-bar a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 6px;
+    }
+    .top-left, .top-right {
+      display: flex;
+      align-items: center;
+    }
+    .top-left a:hover, .top-right a:hover {
+      text-decoration: underline;
+    }
+
+    /* Main Header */
+    header {
+      background: #000000;
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .logo span {
+      margin-left: 5px;
+    }
+    .search-bar {
+      flex: 1;
+      margin: 0 30px;
+      display: flex;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 3px 0 0 3px;
+    }
+    .search-bar button {
+      background: #000000;
+      border: none;
+      padding: 10px 15px;
+      color: #fff;
+      border-radius: 0 3px 3px 0;
+      cursor: pointer;
+    }
+    .icons {
+      font-size: 22px;
+      cursor: pointer;
+      position: relative;
+    }
+    .cart-count {
+      background: yellow;
+      color: black;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 50%;
+      position: absolute;
+      top: -8px;
+      right: -8px;
+    }
+
+    /* Category Bar */
+    .category-bar {
+      background: #000000;
+      color: white;
+      font-size: 14px;
+      padding: 8px 20px;
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      justify-content: center;
+    }
+    .category-bar a {
+      color: white;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .category-bar a:hover {
+      text-decoration: underline;
+    }
+
+    /* Products */
+    .products {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .product-card a {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      position: relative;
+      z-index: 10; /* makes sure it's on top */
+    }
+    .product-card img {
+      max-width: 100%;
+      border-radius: 5px;
+      height:300px;
+    }
+    .product-card h3 {
+      font-size: 18px;
+      margin: 10px 0 5px;
+    }
+    .product-card p {
+      color: #000000;
+      font-weight: bold;
+    }
+    .product-card button {
+      background: #000000;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      margin-top: 8px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .product-card button:hover {
+      background: #333;
+    }
+
+    /* Cart Dropdown */
+    .cart-dropdown {
+      display: none;
+      position: absolute;
+      right: 20px;
+      top: 70px;
+      background: #0d1117;
+      width: 320px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      padding: 20px;
+      z-index: 999;
+      color: #fff;
+    }
+    #cartItems {
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .cart-item span {
+      flex: 1;
+      margin-left: 8px;
+    }
+    .cart-summary p {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+    .checkout-btn {
+      margin-top: 10px;
+      background: #00c853;
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .clear-btn {
+      margin-top: 10px;
+      background: transparent;
+      color: #fff;
+      border: 1px solid #444;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .remove-btn {
+      background: black;
+      color: red;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    .remove-btn:hover {
+      background: #333;
+      color: #ff4d4d;
+    }
+
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-left">
+      <a href="#">Seller Centre</a> | 
+      <a href="#">Start Selling</a> | 
+      <a href="#">Download</a> | 
+      <a href="#">Follow us</a>
+      <a href="#">📘</a>
+      <a href="#">📸</a>
+    </div>
+    <div class="top-right">
+      <a href="#">🔔 Notifications</a> | 
+      <a href="#">❓ Help</a> | 
+      <a href="#">🌐 English ▼</a> |
+      <a href="index.html">Login</a>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header>
+  <div class="logo">
+    <a href="mainpage.html" style="text-decoration:none; color:inherit;">🛍 <span>LocalMY</span></a>
+  </div>
+    <div class="search-bar">
+      <input type="text" placeholder="Sign Up & Get RM25 Off Voucher!">
+      <button>🔍</button>
+    </div>
+    <div class="icons" id="cart">
+      🛒 <span class="cart-count" id="cartCount">0</span>
+    </div>
+  </header>
+
+  <!-- Cart Dropdown -->
+  <div class="cart-dropdown" id="cartDropdown">
+    <h3>Your Cart</h3>
+    <div id="cartItems"></div>
+
+    <div style="margin:10px 0;">
+      <select id="shippingMethod">
+        <option>Standard Shipping</option>
+        <option>Express Shipping</option>
+      </select>
+      <input type="text" id="promoCode" placeholder="Promo code (e.g. SAVE10)">
+    </div>
+
+    <div class="cart-summary">
+      <p>Subtotal <span id="subtotal">$0.00</span></p>
+      <p>Shipping <span id="shipping">$0.00</span></p>
+      <p>Discount <span id="discount">– $0.00</span></p>
+      <p><strong>Total <span id="cartTotal">$0.00</span></strong></p>
+    </div>
+
+    <button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout</button>
+    <button class="clear-btn" onclick="clearCart()">Clear cart</button>
+    <p style="font-size:12px; color:gray;">Test page — no real payment processed.</p>
+  </div>
+
+  <!-- Category Bar -->
+  <div class="category-bar">
+    <a href="#">Foodies</a>
+    <a href="#">Clothes</a>
+    <a href="#">Biskut Murah Giler</a>
+    <a href="#">Instruments</a>
+    <a href="#">Tumbler</a>
+    <a href="#">Bag</a>
+    <a href="#">Shoes</a>
+    <a href="#">More...</a>
+  </div>
+
+  <!-- Products -->
+  <section class="products">
+    <div class="product-card" onclick="window.location.href='angklung.html'" style="cursor:pointer;">
+      <img src="angklung.jpg" alt="Angklung">
+      <h3>Angklung</h3>
+      <p>RM215.00</p>
+      <button onclick="addToCart('Angklung', 215.00, 'angklung.jpg'); event.stopPropagation();">Add to Cart</button>
+    </div>
+    <div class="product-card" onclick="window.location.href='ketipung.html'" style="cursor:pointer;">
+      <img src="ketipung.jpg" alt="Ketipung">
+      <h3>Ketipung</h3>
+      <p>RM250.00</p>
+      <button onclick="addToCart('Ketipung', 250.00, 'ketipung.jpg'); event.stopPropagation();">Add to Cart</button>
+    </div>
+    <div class="product-card" onclick="window.location.href='sape.html'" style="cursor:pointer;">
+      <img src="sape.jpg" alt="Sape">
+      <h3>Sape</h3>
+      <p>RM1500.00</p>
+      <button onclick="addToCart('Sape', 1500.00, 'sape.jpg'); event.stopPropagation();">Add to Cart</button>
+    </div>
+    <div class="product-card">
+      <img src="gambus.jpg" alt="Gambus">
+      <h3>Gambus</h3>
+      <p>RM175.00</p>
+      <button onclick="addToCart('Gambus', 175.00, 'gambus.jpg')">Add to Cart</button>
+    </div>
+    <div class="product-card">
+      <img src="apollo.jpg" alt="Apollo">
+      <h3>Apollo</h3>
+      <p>RM8.99</p>
+      <button onclick="addToCart('Apollo', 8.99, 'apollo.jpg')">Add to Cart</button>
+    </div>
+    <div class="product-card">
+      <img src="dahfa.jpg" alt="Dahfa">
+      <h3>Dahfa</h3>
+      <p>RM2.50</p>
+      <button onclick="addToCart('Dahfa', 2.50, 'dahfa.jpg')">Add to Cart</button>
+    </div>
+    <div class="product-card">
+      <img src="kebaya.jpg" alt="Kebaya">
+      <h3>Kebaya</h3>
+      <p>RM450.00</p>
+      <button onclick="addToCart('Kebaya', 450.00, 'kebaya.jpg')">Add to Cart</button>
+    </div>
+    <div class="product-card">
+      <img src="mielidi.jpg" alt="Mie Lidi">
+      <h3>Mie Lidi</h3>
+      <p>RM12.99</p>
+      <button onclick="addToCart('Mie Lidi', 12.99, 'mielidi.jpg')">Add to Cart</button>
+    </div>
+    <div class="product-card" onclick="window.location.href='dayak.html'" style="cursor:pointer;">
+      <img src="dayak.jpg" alt="Baju Tradisional Dayak">
+      <h3>Baju Tradisional Dayak</h3>
+      <p>RM799.00</p>
+      <button onclick="addToCart('Baju Tradisional Dayak', 799.00, 'dayak.jpg'); event.stopPropagation();">Add to Cart</button>
+    </div>
+  </section>
+
+  <!-- Reviews Section -->
+  <section style="max-width:800px; margin:40px auto; padding:20px; background:#fff; border-radius:8px;">
+    <h2>Customer Reviews (<span id="reviewsCount">0</span>)</h2>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span id="avgRating">0.0</span>
+      <div id="avgStars" class="stars"></div>
+    </div>
+
+    <!-- Rating distribution -->
+    <div id="dist" style="margin:15px 0;"></div>
+
+    <!-- Buttons -->
+    <button id="shuffleBtn">🔄 Shuffle Reviews</button>
+    <button id="addReviewBtn">➕ Add Random Review</button>
+
+    <!-- Reviews List -->
+    <div id="reviewsList" style="margin-top:20px;"></div>
+  </section>
+
+  <!-- Hidden star template -->
+  <template id="starTpl">
+    <span style="font-size:16px; color:gold;">★</span>
+  </template>
+
+
+  <script>
+    let cart = [];
+    const cartCount = document.getElementById("cartCount");
+    const cartItems = document.getElementById("cartItems");
+    const cartDropdown = document.getElementById("cartDropdown");
+    const cartIcon = document.getElementById("cart");
+
+    function addToCart(name, price, image) {
+      cart.push({ name, price, image });
+      updateCart();
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function updateCart() {
+      cartCount.textContent = cart.length;
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = `<p style="text-align:center; color:#aaa;">Your cart is empty.</p>`;
+        document.getElementById("subtotal").textContent = "RM0.00";
+        document.getElementById("shipping").textContent = "RM0.00";
+        document.getElementById("discount").textContent = "– RM0.00";
+        document.getElementById("cartTotal").textContent = "RM0.00";
+        return;
+      }
+
+      cartItems.innerHTML = "";
+      let subtotal = 0;
+      cart.forEach((item, index) => {
+        subtotal += item.price;
+        cartItems.innerHTML += `
+          <div class="cart-item">
+            <img src="${item.image}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;">
+            <span>${item.name} - RM${item.price}</span>
+            <button class="remove-btn" onclick="removeFromCart(${index}, event)">❌</button>
+          </div>`;
+      });
+
+      // Shipping
+      let shipping = document.getElementById("shippingMethod").value === "Express Shipping" ? 10 : 5;
+
+      // Discount
+      let discount = 0;
+      const promo = document.getElementById("promoCode").value.trim().toUpperCase();
+      if (promo === "SAVE10") {
+        discount = subtotal * 0.1;
+      }
+
+      // Totals
+      const total = subtotal + shipping - discount;
+
+      document.getElementById("subtotal").textContent = `RM${subtotal.toFixed(2)}`;
+      document.getElementById("shipping").textContent = `RM${shipping.toFixed(2)}`;
+      document.getElementById("discount").textContent = `– RM${discount.toFixed(2)}`;
+      document.getElementById("cartTotal").textContent = `RM${total.toFixed(2)}`;
+    }
+
+    function removeFromCart(index, event) {
+      if (event) event.stopPropagation();
+      cart.splice(index, 1);
+      updateCart();
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function clearCart() {
+      cart = [];
+      updateCart();
+      localStorage.removeItem("cart");
+    }
+
+    cartIcon.addEventListener("click", () => {
+      cartDropdown.style.display = cartDropdown.style.display === "block" ? "none" : "block";
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!cartIcon.contains(e.target) && !cartDropdown.contains(e.target)) {
+        cartDropdown.style.display = "none";
+      }
+    });
+
+    window.onload = () => {
+      const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart = savedCart;
+      updateCart();
+    };
+
+    document.getElementById("shippingMethod").addEventListener("change", updateCart);
+    document.getElementById("promoCode").addEventListener("input", updateCart);
+
+        /* -------------------- GLOBAL REVIEWS -------------------- */
+    const NAMES = ['Aisha','Ben','Chloe','Danish','Elena','Faiz','Grace','Haris','Isla','Jasper','Khairi','Liam','Maya','Noah','Olivia','Priya','Qayyum','Rina','Sara','Theo','Uma','Vera','Wafi','Xin','Yara','Zara'];
+    const SNIPPETS = [
+      'Battery lasts all day.','Bass is punchy without muddy mids.','Super comfy for long calls.','Pairs instantly with my phone.',
+      'Great build quality for the price.','Blocks background noise well.','Packaging felt premium.','Mic is crystal clear on Zoom.',
+      'Surprisingly light.','Color looks elegant.','Fast charging is legit.','Controls are intuitive.',
+      'Would buy again.','Gifted it—big hit!','Exceeded expectations!','Good value overall.'
+    ];
+
+    function rand(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+    function sample(arr){ return arr[rand(0, arr.length - 1)]; }
+    function daysAgo(n){ const d = new Date(); d.setDate(d.getDate() - n); return d; }
+    function niceDate(d){ return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); }
+
+    function randomRating(){
+      const r = Math.random();
+      if(r < 0.6) return 5;      // 60%
+      if(r < 0.9) return 4;      // 30%
+      if(r < 0.97) return 3;     // 7%
+      if(r < 0.995) return 2;    // 2.5%
+      return 1;                  // 0.5%
+    }
+
+    function makeReview(){
+      return {
+        name: sample(NAMES),
+        rating: randomRating(),
+        text: sample(SNIPPETS),
+        date: daysAgo(rand(0, 90)),
+        verified: Math.random() > 0.15
+      };
+    }
+
+    let REVIEWS = Array.from({length: 10}, makeReview);
+
+    const reviewsList = document.getElementById('reviewsList');
+    const reviewsCount = document.getElementById('reviewsCount');
+    const avgDisplay = document.getElementById('avgRating');
+    const distContainer = document.getElementById('dist');
+    const avgStars = document.getElementById('avgStars');
+
+    function renderStars(container, rating){
+      container.innerHTML = '';
+      for(let i=1;i<=5;i++){
+        const use = document.getElementById('starTpl').content.firstElementChild.cloneNode(true);
+        use.style.color = i <= rating ? 'var(--star)' : '#253042';
+        container.appendChild(use);
+      }
+    }
+
+    function recomputeMeta(){
+      const counts = [0,0,0,0,0,0]; // 0..5
+      REVIEWS.forEach(r => counts[r.rating]++);
+      const total = REVIEWS.length;
+      const sum = REVIEWS.reduce((a,b)=>a+b.rating,0);
+      const avg = total ? (sum/total) : 0;
+
+      avgDisplay.textContent = avg.toFixed(1);
+      reviewsCount.textContent = String(total);
+      renderStars(avgStars, Math.round(avg));
+
+      distContainer.innerHTML = '';
+      for(let star=5; star>=1; star--){
+        const row = document.createElement('div');
+        row.style.display = 'grid';
+        row.style.gridTemplateColumns = '16px 1fr 36px';
+        row.style.gap = '8px';
+        const label = document.createElement('div'); label.textContent = star; label.style.color = 'var(--muted)';
+        const bar = document.createElement('div'); bar.className = 'bar'; const fill = document.createElement('span');
+        const pct = total ? (counts[star] / total * 100) : 0; fill.style.width = pct.toFixed(1) + '%';
+        bar.appendChild(fill);
+        const count = document.createElement('div'); count.textContent = counts[star]; count.style.color = 'var(--muted)'; count.style.textAlign = 'right';
+        row.appendChild(label); row.appendChild(bar); row.appendChild(count);
+        distContainer.appendChild(row);
+      }
+    }
+
+    function renderReviews(){
+      reviewsList.innerHTML = '';
+      REVIEWS
+        .slice()
+        .sort((a,b)=> b.date - a.date)
+        .forEach(r => {
+          const card = document.createElement('div'); card.className = 'review-card';
+          const head = document.createElement('div'); head.className = 'review-head';
+          const av = document.createElement('div'); av.className = 'avatar'; av.textContent = r.name[0];
+          const who = document.createElement('div');
+          const nameLine = document.createElement('div'); nameLine.style.fontWeight = '700'; nameLine.textContent = r.name;
+          const meta = document.createElement('div'); meta.style.color = 'var(--muted)'; meta.style.fontSize = '12px'; meta.textContent = `${niceDate(r.date)} • ${r.verified ? 'Verified purchase' : 'Guest'}`;
+          who.appendChild(nameLine); who.appendChild(meta);
+
+          const stars = document.createElement('div'); stars.className = 'stars'; renderStars(stars, r.rating);
+          head.appendChild(av); head.appendChild(who); head.appendChild(stars);
+
+          const body = document.createElement('div'); body.textContent = r.text; body.style.marginTop = '6px';
+
+          card.appendChild(head); card.appendChild(body);
+          reviewsList.appendChild(card);
+        });
+
+      recomputeMeta();
+    }
+
+    document.getElementById('shuffleBtn').addEventListener('click', () => {
+      REVIEWS = Array.from({length: rand(6, 16)}, makeReview);
+      renderReviews();
+    });
+
+    document.getElementById('addReviewBtn').addEventListener('click', () => {
+      REVIEWS.push(makeReview());
+      renderReviews();
+    });
+
+    renderReviews();
+  </script>
+</body>
+</html>
+
